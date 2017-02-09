@@ -66,11 +66,29 @@ from taskqueue import start_queue
 def extra_parse_args(self, parser):
     parser.add_argument("--reset-tally", help="Enable making a second tally for :election_id",
                         type=int)
+    parser.add_argument("--call-action-handler",
+          help="Execute the action related to a specific message")
+
+def extra_call_action_handler(self):
+
+    from frestq.app import db
+    from frestq.models import Message
+    from frestq.api import call_action_handler
+    msg_id = unicode(self.pargs.call_action_handler)
+    msgs = db.session.query(Message).filter(Message.id.startswith(msg_id)).all()
+    if not msgs:
+        print("message %s not found" % msg_id)
+        return
+    msg = msgs[0]
+    call_action_handler(msg.id, msg.queue_name)
 
 def extra_run(self):
     if self.pargs.reset_tally and isinstance(self.pargs.reset_tally,(int,long)):
         election_id = self.pargs.reset_tally
         tally_election.performer_jobs.reset_tally(election_id)
+        return True
+    elif self.pargs.call_action_handler:
+        extra_call_action_handler(self)
         return True
 
     return False
