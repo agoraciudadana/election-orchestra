@@ -501,17 +501,6 @@ def verify_and_publish_tally(task):
         #          timeout=3600)
         v_convert_plaintexts_json(session_privpath)
 
-        # verify the proofs. sometimes vfork raises an exception at the end
-        # so we dismiss it if the verification is successful. TODO: fix that in
-        # vfork
-        try:
-            # output = subprocess.check_output(["vmnv", protinfo_path, proofs_path, "-v"])
-            output = v_verify(protinfo_path, proofs_path)
-        except subprocess.CalledProcessError, e:
-            output = e.output
-        if "Verification completed SUCCESSFULLY after" not in output:
-            raise TaskError(dict(reason="invalid tally proofs"))
-
     # get number of invalid votes that were detected before decryption
     invalid_votes_path = os.path.join(election_privpath, 'invalid_votes')
     invalid_votes = int(open(invalid_votes_path, 'r').read(), 10)

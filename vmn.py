@@ -44,7 +44,7 @@ def v_gen_protocol_info(session_id, name, num_parties, num_threshold_parties, se
 
 @pre_kill_vfork
 def v_gen_private_info(auth_name, server_url, hint_server_url, session_privpath):
-    command = ["vmni", "-party", "-arrays", "file", "-name", auth_name, "-http",
+    command = ["vmni", "-party", "-arrays", "ram", "-name", auth_name, "-http",
             server_url, "-hint", hint_server_url]
 
     return subprocess.check_call(command, cwd=session_privpath)
